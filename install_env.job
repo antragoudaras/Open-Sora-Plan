@@ -1,0 +1,32 @@
+#!/bin/bash 
+
+#SBATCH --partition=gpu_h100
+#SBATCH --gpus=1
+#SBATCH --gpus-per-node=1
+#SBATCH --job-name=InstallOpenSora
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=18
+#SBATCH --time=00:15:00
+#SBATCH --output=install-open-sora-%A.out
+
+# entire script fails if a single command fails
+set -e
+
+
+module purge
+module load 2023
+module load Anaconda3/2023.07-2
+module load CUDA/12.1.1
+
+
+conda create -n opensora_env python=3.8 -y
+source activate opensora_env
+
+pip install -e .
+
+# install additional packages for training cases
+pip install -e ".[train]"
+# install optional requirements such as static type checking:
+pip install -e '.[dev]'
+
+conda install -c conda-forge code-server=4.23.1 -y

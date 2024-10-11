@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu_h100
+#SBATCH --gpus=1
+#SBATCH --gpus-per-node=1
+#SBATCH --job-name=download_weights_mt5-xxl
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=18
+#SBATCH --time=00:59:58
+#SBATCH --output=download_weights_mt5-xxl-%A.out
+
+# entire script fails if a single command fails
+set -e
+
+
+PROJECT_DIR="$PWD"
+#save the weights in the scratch-shared folder
+mkdir -p /scratch-shared/${USER}/
+
+cd /scratch-shared/${USER}/
+
+rm -rf mt5-xxl/
+
+git lfs install
+
+git clone https://huggingface.co/google/mt5-xxl
+
+#symbolic link to the weights
+cd $PROJECT_DIR
+ln -s /scratch-shared/${USER}/mt5-xxl/

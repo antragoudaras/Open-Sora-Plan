@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu_h100
+#SBATCH --gpus=1
+#SBATCH --gpus-per-node=1
+#SBATCH --job-name=download_opensora_weights
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=18
+#SBATCH --time=00:59:58
+#SBATCH --output=download_opensora_weights-%A.out
+
+# entire script fails if a single command fails
+set -e
+
+
+PROJECT_DIR="$PWD"
+
+mkdir -p /scratch-shared/${USER}/
+
+cd /scratch-shared/${USER}/
+
+rm -rf Open-Sora-Plan-v1.2.0/
+
+git lfs install 
+
+git clone https://huggingface.co/LanguageBind/Open-Sora-Plan-v1.2.0
+
+#symbolic link to the weights
+# Go back to project_DIR
+cd $PROJECT_DIR
+ln -s /scratch-shared/${USER}/Open-Sora-Plan-v1.2.0/
